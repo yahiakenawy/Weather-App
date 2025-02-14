@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Environmental Monitoring Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      canvas { margin-bottom: 40px; }
+    </style>
+</head>
+<body>
+    <h1>Environmental Monitoring Dashboard</h1>
+    <canvas id="temperatureChart" width="600" height="300"></canvas>
+    <canvas id="humidityChart" width="600" height="300"></canvas>
+    <canvas id="pressureChart" width="600" height="300"></canvas>
+    
+    <script>
+        // Initialize charts with initial data from server-side rendering.
+        const timestamps = {{ timestamps | tojson }};
+        const temperatures = {{ temperatures | tojson }};
+        const humidities = {{ humidities | tojson }};
+        const pressures = {{ pressures | tojson }};
+
+        const ctxTemp = document.getElementById('temperatureChart').getContext('2d');
+        const temperatureChart = new Chart(ctxTemp, {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: [{
+                    label: 'Temperature (°C)',
+                    data: temperatures,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Time' } },
+                    y: { title: { display: true, text: 'Temperature (°C)' } }
+                }
+            }
+        });
+
+        const ctxHumidity = document.getElementById('humidityChart').getContext('2d');
+        const humidityChart = new Chart(ctxHumidity, {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: [{
+                    label: 'Humidity (%)',
+                    data: humidities,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Time' } },
+                    y: { title: { display: true, text: 'Humidity (%)' } }
+                }
+            }
+        });
+
+        const ctxPressure = document.getElementById('pressureChart').getContext('2d');
+        const pressureChart = new Chart(ctxPressure, {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: [{
+                    label: 'Pressure (hPa)',
+                    data: pressures,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Time' } },
+                    y: { title: { display: true, text: 'Pressure (hPa)' } }
+                }
+            }
+        });
+
+        // Function to fetch new data and update charts
+        function updateCharts() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // Update Temperature Chart
+                    temperatureChart.data.labels = data.timestamps;
+                    temperatureChart.data.datasets[0].data = data.temperatures;
+                    temperatureChart.update();
+
+                    // Update Humidity Chart
+                    humidityChart.data.labels = data.timestamps;
+                    humidityChart.data.datasets[0].data = data.humidities;
+                    humidityChart.update();
+
+                    // Update Pressure Chart
+                    pressureChart.data.labels = data.timestamps;
+                    pressureChart.data.datasets[0].data = data.pressures;
+                    pressureChart.update();
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Poll the server for new data every 10 minutes (600000 ms)
+        // You can change the interval to 3 minutes (180000 ms) if desired.
+        setInterval(updateCharts, 10000);
+    </script>
+</body>
+</html>
