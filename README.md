@@ -56,7 +56,7 @@ Then, open your web browser and navigate to:
 http://localhost:5000
 ```
 
-The dashboard will automatically update every 10 seconds (this interval can be configured in `App.py`).
+The dashboard will automatically update every 86.5 seconds (this interval can be configured in `App.py`).
 
 ## Configuration
 You can adjust the following settings in `Config.py`:
