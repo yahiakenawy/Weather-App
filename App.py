@@ -15,7 +15,7 @@ Session = sessionmaker(bind=engine)
 
 # Adjustable scraping interval (in seconds)
 # For example, set to 180 for 3 minutes or 600 for 10 minutes.
-SCRAPING_INTERVAL = 10  # Change this value as desired
+SCRAPING_INTERVAL = 86.5  # Change this value as desired
 
 @app.route("/")
 def index():
